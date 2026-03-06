@@ -1,12 +1,20 @@
 # Lab M5.08 - Secrets Management in Pipelines
 
-**Repository:** [https://github.com/cloud-engineering-bootcamp/ce-lab-secrets-management-pipelines](https://github.com/cloud-engineering-bootcamp/ce-lab-secrets-management-pipelines)
+**Repository:** https://github.com/MaryaAhmadi/ce-lab-secrets-management-pipelines.git
 
 **Duration:** 60-90 minutes  
 **Difficulty:** Intermediate  
 **Submission:** GitHub Repository
 
 ---
+
+
+## What This Project Does
+This project demonstrates secure secrets handling across GitHub Actions and AWS Secrets Manager. 
+It includes log masking, secret rotation-age checks, Terraform-provisioned secrets, and a pre-commit hook 
+that blocks accidentally committed credentials.
+---
+
 
 ## 🎯 Learning Objectives
 After completing this lab, you will be able to:
@@ -30,6 +38,64 @@ After completing this lab, you will be able to:
 - AWS CLI configured (for some labs)
 
 ---
+## Project Structure
+
+.
+├── .github/workflows/
+│ ├── secrets-demo.yml # GitHub Secrets masking demo
+│ └── aws-secrets.yml # AWS Secrets Manager retrieval
+├── terraform/
+│ ├── main.tf # Secrets Manager resources
+│ ├── variables.tf
+│ └── outputs.tf
+├── scripts/
+│ ├── check-secret-age.sh # Rotation age checker
+│ └── scan-secrets.sh # Secret pattern scanner
+├── .githooks/
+│ └── pre-commit # Pre-commit secret scan
+├── .pre-commit-config.yaml
+└── .gitignore
+
+
+## Secrets Configured
+- **GitHub Repository:** `DB_PASSWORD`, `API_KEY`
+- **GitHub Environment (staging):** `DEPLOY_TOKEN`
+- **AWS Secrets Manager:** `database-credentials`, `api-keys`
+
+## How to Run
+
+```bash
+# Deploy AWS secrets via Terraform
+cd terraform && terraform apply && cd ..
+
+# Run rotation check
+./scripts/check-secret-age.sh "m508-secrets-lab/dev/database-credentials" 90
+
+# Enable pre-commit hook
+git config core.hooksPath .githooks
+
+
+
+## Key Decisions / Features
+
+Used ::add-mask:: in GitHub Actions for dynamically retrieved secrets to prevent accidental logging.
+Terraform manages AWS Secrets Manager resources for auditability and reproducibility.
+Pre-commit hook scans staged files using regex patterns similar to Gitleaks rules to prevent secret leaks.
+
+GitHub Actions workflow includes:
+Secrets retrieval and masking demo
+AWS Secrets Manager retrieval
+Secret rotation age check
+Auto secret rotation (optional)
+Scheduled scans via GitHub Actions can be configured using cron schedules.
+
+
+ ## Notes
+All sensitive values are masked in workflow logs.
+Pre-commit hooks ensure secrets do not get committed to the repository.
+
+
+
 
 ## Lab Overview
 
